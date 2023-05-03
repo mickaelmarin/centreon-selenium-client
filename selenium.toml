@@ -1,0 +1,21 @@
+[node]
+detect-drivers = false
+
+[[node.driver-configuration]]
+max-sessions = 100
+display-name = "Edge"
+stereotype = "{\"browserName\": \"MicrosoftEdge\", \"browserVersion\": \"112\", \"platformName\": \"Linux\", \"ms:edgeOptions\": {\"binary\":\"/usr/bin/microsoft-edge\"}}"
+webdriver-executable = '/opt/msedge/driver/msedgedriver'
+
+[[node.driver-configuration]]
+max-sessions = 100
+display-name = "Chrome"
+stereotype = "{\"browserName\": \"chrome\", \"browserVersion\": \"112\", \"platformName\": \"Linux\", \"goog:chromeOptions\": {\"binary\":\"/usr/bin/google-chrome\"}}"
+webdriver-executable = '/opt/chrome/driver/chromedriver'
+
+[[node.driver-configuration]]
+max-sessions = 100
+display-name = "Firefox"
+stereotype = "{\"browserName\": \"firefox\", \"browserVersion\": \"112\", \"platformName\": \"Linux\", \"moz:firefoxOptions\": {\"binary\": \"/opt/firefox/firefox-bin\"}}"
+webdriver-executable = '/opt/geckodriver/geckodriver'
+#webdriver-executable = '/opt/geckodriver/geckodriver-0.32'

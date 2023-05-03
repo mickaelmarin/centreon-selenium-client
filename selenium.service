@@ -1,0 +1,13 @@
+[Unit]
+Description=Selenium Standalone Server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=root
+
+Environment=DISPLAY=192.168.10.20:0.0
+ExecStart=/usr/bin/java -jar /opt/selenium/selenium-server-4.9.0.jar standalone --config /etc/selenium.toml
+
+[Install]
+WantedBy=multi-user.target

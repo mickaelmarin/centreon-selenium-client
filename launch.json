@@ -1,0 +1,27 @@
+{
+    // Utilisez IntelliSense pour en savoir plus sur les attributs possibles.
+    // Pointez pour afficher la description des attributs existants.
+    // Pour plus d'informations, visitez : https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python : fichier actif",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            // "args": ["--source-file", "scenarios/scenario1.py"]
+            "args": [
+            "--global_warn_crit_timeout", "8000;10000;20000", 
+            "--scenarios-dir","scenarios",
+            "--browser", "chrome",
+            "--each_step_warn_crit_timeout", "999;1000;4000",
+            "--by_step_warn_crit_timeout", "TEST1;1000;3000;5000",
+            "--by_step_warn_crit_timeout", "TEST0;2000;3000;3001",
+            "--by_step_warn_crit_timeout", "TEST2;2000;3000;3001",
+            "--scenario", "scenario2"
+            ]
+        }
+    ]
+}
