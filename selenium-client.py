@@ -4,12 +4,10 @@ import time
 import ast
 from selenium import webdriver
 
-
-
 # from xvfbwrapper import Xvfb
 # display = Xvfb()
 
-# sys.tracebacklimit=0
+sys.tracebacklimit=0
 
 class Manage_options(object):
     def __init__(self, pattern):
@@ -66,15 +64,17 @@ class Manage_options(object):
         else:
             return dir       
 
-    def build_options_dict(self, option, value, parser):  # sourcery skip: move-assign
-        
+    def build_options_dict(self, option, value, parser):
+        if option in ["headless"]:
+            self.options_dict[option] = value
         if option in [
                 "scenarios_dir",
                 "scenario",
-                "browser"
+                "browser",
+                "selenium_server",
+                "selenium_server_port"
             ]:
             if len(value) > 0:
-            
                 self.options_dict[option] = value
             else:
             
@@ -123,9 +123,10 @@ class Scenario(object):
         self.set_browser_options(self.options["browser"])
 
         self.driver = webdriver.Remote(
-            command_executor='http://127.0.0.1:4444/wd/hub',\
+            command_executor=f'http://{self.options["selenium_server"]}:{self.options["selenium_server_port"]}/wd/hub',\
                 options=self.browser_options
         )
+
         # self.driver.file_detector = LocalFileDetector()
         self.global_timeout = \
             self.options["global_warn_crit_timeout"]["timeout"]
@@ -161,20 +162,23 @@ class Scenario(object):
         if browser == "firefox":
             from selenium.webdriver.firefox.options import Options
             self.browser_options = Options()
-            self.browser_options.add_argument("--headless")
-            self.browser_options.add_argument("--window-size=1366,768")
+            if self.options["headless"]:
+                self.browser_options.add_argument("--headless")
+                self.browser_options.add_argument("--window-size=1366,768")
         elif browser == "chrome":
             from selenium.webdriver.chrome.options import Options
             self.browser_options = Options()
             self.browser_options.add_argument("--no-sandbox")
-            self.browser_options.add_argument("--headless=new")
-            self.browser_options.add_argument("--window-size=1366,768")
+            if self.options["headless"]:
+                self.browser_options.add_argument("--headless=new")
+                self.browser_options.add_argument("--window-size=1366,768")
         elif browser == "edge":
             from selenium.webdriver.edge.options import Options
             self.browser_options = Options()
             self.browser_options.add_argument("--no-sandbox")
-            self.browser_options.add_argument("--headless=new")
-            self.browser_options.add_argument("--window-size=1366,768")
+            if self.options["headless"]:
+                self.browser_options.add_argument("--headless=new")
+                self.browser_options.add_argument("--window-size=1366,768")
         else:
             print("browser unknown")
         
@@ -376,7 +380,7 @@ class Scenario(object):
             
             self.timeout = self.calculate_timeout(step_name=step_name)
             return
-        
+    
 class Main(object):
     
   
@@ -414,8 +418,16 @@ class Main(object):
         parser.add_argument("--scenario", required=True, type=str, metavar='<scenario name without .py on end>',\
             help="ex: myfirstscenario")
         
+        parser.add_argument("--selenium-server",default="127.0.0.1", required=False, type=str, metavar='<selenium standalone server>',\
+            help="ex: 127.0.0.1")
+        
+        parser.add_argument("--selenium-server-port",default="4444", required=False, type=str, metavar='<selenium standalone server>',\
+            help="ex: 4444")
+        
         parser.add_argument("--browser",  choices=['chrome', 'firefox', 'edge'],\
             required=True)
+        
+        parser.add_argument('--headless', action='store_true')
         
         args = parser.parse_args()
 
@@ -442,9 +454,21 @@ class Main(object):
         class ScenarioRunner(Scenario, scenario.ScenarioCustom):
             def __init__(self, options):
                 super().__init__(options)
+            def run(self):
+                try:
+                    
+                    self.scenario_steps()
+                    
+                    self.step_timer(last_step=True)
+                    self.build_centreon_output()
+
+                except  Exception as e:
+                    self.step_timer(last_step=True, abort=True)
+                    self.build_centreon_output(abort = True)
+            
         
         scenario_instance = ScenarioRunner(self.manage_options.options_dict)
-        # display.start()
+            # display.start()
         scenario_instance.run()
 
 

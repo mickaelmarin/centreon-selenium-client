@@ -6,9 +6,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 class ScenarioCustom(object):
-    def run(self):
-        try:
-            #DEBUT SCENARIO
+    def scenario_steps(self):
+            # DEBUT SCENARIO
             self.step_timer()
             self.driver.get("https://www.selenium.dev/")
 
@@ -60,17 +59,4 @@ class ScenarioCustom(object):
             
             self.step_timer()
             self.driver.find_element(By.CSS_SELECTOR, "#m-documentationoverview > span").click()
-            
             # FIN SCENARIO
-            self.step_timer(last_step=True)
-            self.build_centreon_output()
-
-        except  Exception as e:
-            self.step_timer(last_step=True, abort=True)
-            self.build_centreon_output(abort = True)
-            
-            
-
-if __name__ == "__main__":
-    main = ScenarioCustom()
-    main.run()
